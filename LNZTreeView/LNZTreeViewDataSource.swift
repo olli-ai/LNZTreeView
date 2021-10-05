@@ -9,6 +9,8 @@
 import UIKit
 
 @objc public protocol LNZTreeViewDataSource: class {
+    func numberOfRootSections(in treeView: LNZTreeView, section: Int) -> Int 
+    
     ///The tree view can be sectioned just like the UITableView
     func numberOfSections(in treeView: LNZTreeView) -> Int
     
