@@ -13,7 +13,7 @@ import UIKit
     var isExpandable: Bool { get }
 }
 
-@IBDesignable @objcMembers
+@IBDesignable
 public class LNZTreeView: UIView {
     class MinimalTreeNode {
         var identifier: String
@@ -22,15 +22,12 @@ public class LNZTreeView: UIView {
         var isExpandable: Bool = false
         var isExpanded: Bool = false
         
-        
         var parent: TreeNodeProtocol?
         
         init(identifier: String) {
             self.identifier = identifier
         }
     }
-    
-
         
     @IBInspectable public var indentationWidth: CGFloat = 10
     @IBInspectable public var isEditing: Bool {
@@ -52,19 +49,9 @@ public class LNZTreeView: UIView {
         tableView.setEditing(editing, animated: animated)
     }
 
-    lazy var tableView: UITableView! = {
+    public lazy var tableView: UITableView! = {
         return UITableView(frame: frame, style: .plain)
     }()
-    
-    public var keyboardDismissMode : UIScrollView.KeyboardDismissMode {
-        get {
-            return tableView.keyboardDismissMode
-        }
-        set{
-            tableView.keyboardDismissMode = newValue
-        }
-    }
-    
     public var tableViewRowAnimation: UITableView.RowAnimation = .right
 
     var nodesForSection = [Int: [MinimalTreeNode]]()
@@ -107,7 +94,6 @@ public class LNZTreeView: UIView {
                 ])
         }
     }
-
     
     open override func didMoveToSuperview() {
         super.didMoveToSuperview()
@@ -228,7 +214,6 @@ public class LNZTreeView: UIView {
      - parameter cellClass: The class of a cell that you want to use in the table.
      - parameter identifier: The reuse identifier for the cell. This parameter must not be nil and must not be an empty string.
      */
-    @objc(registerCellClass:forCellReuseIdentifier:)
     public func register(_ cellClass: AnyClass?, forCellReuseIdentifier identifier: String) {
         tableView.register(cellClass, forCellReuseIdentifier: identifier)
     }
@@ -239,7 +224,6 @@ public class LNZTreeView: UIView {
      - parameter nib: A nib object that specifies the nib file to use to create the cell.
      - parameter identifier: The reuse identifier for the cell. This parameter must not be nil and must not be an empty string.
      */
-    @objc(registerNib:forCellReuseIdentifier:)
     public func register(_ nib: UINib?, forCellReuseIdentifier identifier: String) {
         tableView.register(nib, forCellReuseIdentifier: identifier)
     }
@@ -400,6 +384,23 @@ public class LNZTreeView: UIView {
 extension LNZTreeView: UITableViewDataSource {
     public func numberOfSections(in tableView: UITableView) -> Int {
         return dataSource?.numberOfSections(in: self) ?? 0
+    }
+    
+    public func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if section == 0 { return 0 }
+        if (self.dataSource?.numberOfRootSections(in: self, section: section) ?? 0) != 0 { return 20 }
+        return 0
+    }
+    
+    public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        
+        if (self.dataSource?.numberOfRootSections(in: self, section: section) ?? 0) != 0 {
+            let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 20))
+            headerView.backgroundColor = .clear
+
+            return headerView
+        }
+        return nil
     }
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
